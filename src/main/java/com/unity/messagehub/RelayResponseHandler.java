@@ -30,6 +30,8 @@ public class RelayResponseHandler implements Runnable {
 					if (handlerMap.containsKey(key)) {
 						handlerMap.get(key).relay(msg);
 					}
+					// Please NOTE: Relay message is lost if the receiver is not yet connected 
+					//       to the server
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
