@@ -7,24 +7,24 @@ import com.unity.messagehub.library.RelayResponseMessage;
 public class RelayResponseHandler implements Runnable {
 	
 	ConcurrentHashMap<Long, ClientHandler> handlerMap;
-	Queue<RelayResponseMessage> q;
+	Queue<RelayResponseMessage> messageQueue;
 	
 	public RelayResponseHandler(ConcurrentHashMap<Long, ClientHandler> handlerMap, 
-			Queue<RelayResponseMessage> q2) 
+			Queue<RelayResponseMessage> q) 
 	{
 		this.handlerMap = handlerMap;
-		this.q = q2;
+		this.messageQueue = q;
 	}
 	
 	public void run() {
 		while (true) {
 			try {
-				synchronized(q) {
-					if (q.isEmpty()) {
-						q.wait();
+				synchronized(messageQueue) {
+					if (messageQueue.isEmpty()) {
+						messageQueue.wait();
 					}
 				}
-				RelayResponseMessage msg = q.remove();
+				RelayResponseMessage msg = messageQueue.remove();
 				
 				for (long key: msg.getReceivers()) {
 					if (handlerMap.containsKey(key)) {

@@ -25,7 +25,7 @@ public class ClientHandler implements Runnable {
 	long id; // id assigned to this client by the server
 	ConcurrentHashMap<Socket, Long> clients; // Keeps track of the clients connected to this server 
 											 // for the getList command
-	Queue<RelayResponseMessage> q = null; // Queue for the relay messages received by this client handler
+	Queue<RelayResponseMessage> messageQueue = null; // Queue for the relay messages received by this client handler
 	DataOutputStream out = null;
 	DataInputStream in = null;
 	
@@ -36,7 +36,7 @@ public class ClientHandler implements Runnable {
 		this.clients = clients;
 		this.out = new DataOutputStream(new BufferedOutputStream(this.sock.getOutputStream()));
 		this.in = new DataInputStream(new BufferedInputStream(this.sock.getInputStream()));
-		this.q = q;
+		this.messageQueue = q;
 	}
 	
 	public void relay(Message msg) {
@@ -76,9 +76,9 @@ public class ClientHandler implements Runnable {
 						RelayRequestMessage request = new RelayRequestMessage(in);
 						RelayResponseMessage reply = new RelayResponseMessage(request.getMessageSize(), 
 								request.getMessage(), request.getReceivers());
-						synchronized(q) {
-							q.add(reply);
-							q.notifyAll();
+						synchronized(messageQueue) {
+							messageQueue.add(reply);
+							messageQueue.notifyAll();
 						}
 						break;
 				}
@@ -87,8 +87,10 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		} finally {
 			try {
-				clients.remove(sock);
-				sock.close();
+				if (sock!=null) clients.remove(sock);
+				if (sock!=null) sock.close();
+				if (in!=null) in.close();
+				if (out!=null) out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
