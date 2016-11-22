@@ -25,8 +25,11 @@ public class RelayResponseHandler implements Runnable {
 					}
 				}
 				RelayResponseMessage msg = q.remove();
-				for (Long key: msg.getReceivers()) {
-					handlerMap.get(key).relay(msg);
+				
+				for (long key: msg.getReceivers()) {
+					if (handlerMap.containsKey(key)) {
+						handlerMap.get(key).relay(msg);
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

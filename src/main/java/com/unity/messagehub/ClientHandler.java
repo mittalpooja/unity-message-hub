@@ -14,18 +14,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.unity.messagehub.library.Message;
 import com.unity.messagehub.library.MessageHubProtocol;
+import com.unity.messagehub.library.RelayRequestMessage;
 import com.unity.messagehub.library.RelayResponseMessage;
 
 import com.unity.messagehub.library.GetIdResponseMessage;
 import com.unity.messagehub.library.GetListResponseMessage;
 
 public class ClientHandler implements Runnable {
-	Socket sock;
-	long id;
-	ConcurrentHashMap<Socket, Long> clients;
+	Socket sock; // socket opened for this client
+	long id; // id assigned to this client by the server
+	ConcurrentHashMap<Socket, Long> clients; // Keeps track of the clients connected to this server 
+											 // for the getList command
+	Queue<RelayResponseMessage> q = null; // Queue for the relay messages received by this client handler
 	DataOutputStream out = null;
 	DataInputStream in = null;
-	Queue<RelayResponseMessage> q = null;
 	
 	public ClientHandler(Socket sock, long id, ConcurrentHashMap<Socket, Long> clients,
 			Queue<RelayResponseMessage> q) throws IOException {
@@ -71,17 +73,9 @@ public class ClientHandler implements Runnable {
 						resp.send(out);
 						break;
 					case MessageHubProtocol.RELAY_REQUEST:
-						byte numReceivers = in.readByte();
-						int messageSize = in.readInt();
-						
-						long[] receivers = new long[numReceivers];
-						for (int i=0; i<numReceivers; i++) {
-							receivers[i]=in.readLong();
-						}
-						byte[] message = new byte[messageSize];
-						in.read(message);
-						
-						RelayResponseMessage reply = new RelayResponseMessage(messageSize, message, receivers);
+						RelayRequestMessage request = new RelayRequestMessage(in);
+						RelayResponseMessage reply = new RelayResponseMessage(request.getMessageSize(), 
+								request.getMessage(), request.getReceivers());
 						synchronized(q) {
 							q.add(reply);
 							q.notifyAll();

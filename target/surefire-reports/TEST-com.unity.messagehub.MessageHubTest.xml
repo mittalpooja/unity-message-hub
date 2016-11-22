@@ -62,7 +62,7 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="com.unity.messagehub.MessageHubTest" name="testGetId" time="0.028"/>
-  <testcase classname="com.unity.messagehub.MessageHubTest" name="testGetList" time="0.006"/>
-  <testcase classname="com.unity.messagehub.MessageHubTest" name="testRelay" time="0.005"/>
+  <testcase classname="com.unity.messagehub.MessageHubTest" name="testGetId" time="0.032"/>
+  <testcase classname="com.unity.messagehub.MessageHubTest" name="testGetList" time="0.003"/>
+  <testcase classname="com.unity.messagehub.MessageHubTest" name="testRelay" time="0.004"/>
 </testsuite>
