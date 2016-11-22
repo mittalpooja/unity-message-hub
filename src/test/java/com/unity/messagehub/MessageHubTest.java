@@ -147,5 +147,38 @@ public class MessageHubTest
 				e.printStackTrace();
 			}	
 		}
+		
+	}
+	
+	// TODO: Add the test case : when the server has only one client connected
+	//       and we do getLIst at that client
+	public void testGetListEmpty() {
+	}
+	
+	// TODO: Add the test case : when the client sends a bad message to the server
+	public void testBadMessage() {
+	}
+
+	// TODO: Add the test case : when the client sends a unparsable relay message to the server
+	public void testUnparsabeRelayMessage() {
+	}
+
+	// TODO: Add the test case : when the client sends the relay message to a client not connected
+	public void testRelayMessageToNotConnecteClient() {
+	}
+
+	// TODO: Add the test case : when the client sends the relay message to a client not connected
+	//       and then send a relay message to all the connected clients
+	public void testRelayMessageToNotConnecteClient2() {
+	}
+
+	// TODO: Add the test case : when the client sends the relay message to 
+	//       3 clients and one of them is not connected
+	public void testRelayMessageToNotConnecteClient3() {
+	}
+
+	// TODO: Add the test case : when the client sends the relay message to 
+	//       itself
+	public void testRelayMessageToNotConnecteClient4() {
 	}
 }
