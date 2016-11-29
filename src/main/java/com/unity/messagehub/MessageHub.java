@@ -17,30 +17,27 @@ public class MessageHub implements Runnable
 	public final static int SERVER_PORT = 8082;
 	
 	AtomicLong count = new AtomicLong();
-	private ConcurrentHashMap<Socket, Long> clients = null;
 	private ConcurrentHashMap<Long, ClientHandler> handlerMap;
-	public Queue<RelayResponseMessage> q = null;
+	public Queue<RelayResponseMessage> relayMessageQueue = null;
 	public final static Executor exec = Executors.newFixedThreadPool(256);
 	private static ServerSocket server = null;
 
 	public MessageHub() {
-		this.clients = new ConcurrentHashMap<Socket, Long>();
-		this.q = new LinkedList<RelayResponseMessage>();
+		this.relayMessageQueue = new LinkedList<RelayResponseMessage>();
 		this.handlerMap = new ConcurrentHashMap<Long, ClientHandler>();
 	}
 	
 	public void run() {
 		try {
 			server = new ServerSocket(SERVER_PORT);
-			RelayResponseHandler relayTask = new RelayResponseHandler(handlerMap, q);
+			RelayResponseHandler relayTask = new RelayResponseHandler(handlerMap, relayMessageQueue);
 			exec.execute(relayTask);
 			
 			while (true) {
 				Socket sock = server.accept();
 				count.incrementAndGet();
-				clients.put(sock, count.get());
 				
-				ClientHandler handler = new ClientHandler(sock, count.get(), clients, q);
+				ClientHandler handler = new ClientHandler(sock, count.get(), handlerMap, relayMessageQueue);
 				handlerMap.put(count.get(), handler);
 				exec.execute(handler);
 			}
